@@ -59,7 +59,9 @@ class VersionCodex:
                 4, len_release
             ):  # If there is only 0s after the 4th component we can ignore the 0s and still reconstruct the string
                 if release[i] != 0:
-                    raise ValueError("release segment has more than 4 components")
+                    raise ValueError(
+                        "release segment has more than 4 components"
+                    )
 
         major = version_obj.major
         if (
@@ -111,9 +113,11 @@ class VersionCodex:
                 raise ValueError(
                     "Pre-release number larger than 63"
                 )  #  The value of pre is caped at '63' since only 6 bits are reserved for it
-            pre_bit_stream = cls.pre_release_dict[pre_letter] + bin(pre_number)[
-                2:
-            ].rjust(6, "0")  # The pre-release letter in encoded in 2 bits
+            pre_bit_stream = cls.pre_release_dict[pre_letter] + bin(
+                pre_number
+            )[2:].rjust(
+                6, "0"
+            )  # The pre-release letter in encoded in 2 bits
             dev_number = version_obj.dev
             if (
                 dev_number > 15
@@ -134,9 +138,11 @@ class VersionCodex:
                 raise ValueError(
                     "Pre-release number larger than 63"
                 )  #  The value of pre is caped at '63' since only 6 bits are reserved for it
-            pre_bit_stream = cls.pre_release_dict[pre_letter] + bin(pre_number)[
-                2:
-            ].rjust(6, "0")  # The pre-release letter in encoded in 2 bits
+            pre_bit_stream = cls.pre_release_dict[pre_letter] + bin(
+                pre_number
+            )[2:].rjust(
+                6, "0"
+            )  # The pre-release letter in encoded in 2 bits
             dev_bit_stream = "1111"
         else:
             pre_bit_stream = "11111111"
@@ -184,7 +190,9 @@ class VersionCodex:
 
         # Post-release information
         post_string = ""
-        if not (post_bits[0] == "0"):  # The first bit in the post section is a flag
+        if not (
+            post_bits[0] == "0"
+        ):  # The first bit in the post section is a flag
             post_num = int("0b" + post_bits[1:], 2)
             post_string = "post" + str(post_num)
 
