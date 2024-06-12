@@ -1,5 +1,7 @@
+from typing import Any
+
 from django.db import models
-from packaging.version import parse
+from packaging.version import Version, parse
 
 
 class VersionCodex:
@@ -225,21 +227,23 @@ class VersionCodex:
 class VersionField(models.PositiveBigIntegerField):
     description = "Software versions encoded in 8-byte signed integers. Ideal for comparing software versions on lookups."
 
-    def from_db_value(self, value, expression, connection):
+    def from_db_value(
+        self, value: Any, expression, connection
+    ) -> None | Version:
         if value is None:
             return value
-        return parse(VersionCodex.int2version(value))
+        return Version(VersionCodex.int2version(value))
 
-    def to_python(self, value):
+    def to_python(self, value: Any) -> None | Version:
         if isinstance(value, Version):
             return value
 
         if value is None:
             return value
 
-        return parse(VersionCodex.int2version(value))
+        return Version(VersionCodex.int2version(value))
 
-    def get_prep_value(self, value):
+    def get_prep_value(self, value: str) -> int:
         if isinstance(value, int):
             return value
         return VersionCodex.version2int(value)

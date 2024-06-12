@@ -1,7 +1,7 @@
 import random
 
 from django.test import TestCase
-from packaging.version import InvalidVersion, parse
+from packaging.version import InvalidVersion, Version, parse
 
 from django_version_field.field import VersionCodex
 
@@ -45,7 +45,7 @@ class VersionTestCase(TestCase):
             f"Total examples visited: {total_examples}, Faulty inputs: {faulty_inputs}, Percentage of valid inputs: {valid_input_percentage}%"
         )
         print(
-            f"Overflow errors: {overflow_errors}, Percentage of valid examples ignored due to overflow: {overflow_percentage}%"
+            f"Value errors: {overflow_errors}, Percentage of valid examples ignored due to value errors: {overflow_percentage}%"
         )
 
     def test_input_reconstruction(self) -> None:
@@ -54,7 +54,7 @@ class VersionTestCase(TestCase):
             version_str = version_model.version_string
             version_obj = version_model.version
             try:
-                assert version_obj == parse(version_str)
+                assert version_obj == Version(version_str)
             except AssertionError:
                 print(version_obj)
                 print(version_str)
@@ -74,7 +74,7 @@ class VersionTestCase(TestCase):
                 q_set[j].version_string,
             )
             # Version objects constructed from original version strings
-            version_obj1, version_obj2 = parse(version_str1), parse(
+            version_obj1, version_obj2 = Version(version_str1), Version(
                 version_str2
             )
             # Encoded version as it is stored in the database

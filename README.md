@@ -1,11 +1,34 @@
 # django-version-field
 
-A field to handle versions in Django models
+A field to handle software version information in Django models. Our main goal is to have useful lookups, i.e. to be able to make order comparisons between versions. This requires transforming the input into an integer. We have two desired properties:
+
+1. To be able to reconstruct the input without losing information.
+2. To preserve the order when transforming inputs into integers.
+
+The main constraint is the max size of the interger that can be stored in the database (8-bytes). This constraint forces us to reject inputs that are too large to fit into our scheme. Please read below for more details.
 
 ## Usage
 
 > [!IMPORTANT]
-> The field stores every part [MAJOR].[MINOR].[PATCH] in 2 unsigned bytes so it raises error if one of this part is not within [0, 65535]
+> The field parses the input string using the packaging.version `parse` method. `parse` expects an input complying with the following scheme,
+```
+[N!]N(.N)*[{a|b|rc}N][.postN][.devN]
+```
+> where `N` are positive integers. Inputs not satisfying this condition with raise the `InvalidVersion` error.
+> Once the input is parsed, the field tries to create a bit stream by concatenating:
+
+- The epoch number encoded into 4 bits.
+- The major encoded into 12 bits.
+- The minor encoded into 8 bits.
+- The patch number (micro) encoded into 16 bits.
+- The 4th part of the 'release' segment encoded into 8 bits.
+- The pre-release number and symbol (`a`,`b` or `rc`) encoded into 6 bits.
+- The post-release number and post-release flag encoded into 4 bits (3 bits for the number).
+- The dev-release number encoded into 4 bits.
+
+> Inputs where a segment is too large to be encoded are rejected, raising `ValueError`.
+> The local version information is not encoded in our scheme, so inputs with local version information are rejected.
+> The input can contain more than 4 parts in the 'release' segment, but these must contain only '0', otherwise the input is rejected.
 
 ### Model
 
