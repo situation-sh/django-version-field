@@ -86,3 +86,13 @@ The local version information is not encoded in our scheme, so inputs with local
 The input can contain more than 4 parts in the 'release' segment, but these must contain only '0', otherwise the input is rejected.
 
 ![Segment structure diagram](/images/Version_Segment_Structure.pdf)
+
+## Test Data
+
+Test data was extracted from the Common Platform Enumeration (CPE) records from the National Vulnerability Database (NVD), the [CPE dictionary version 2.3](https://nvd.nist.gov/feeds/xml/cpe/dictionary/official-cpe-dictionary_v2.3.xml.gz), which contains an exhaustive list of software products with their versions.
+
+The data was extracted and separated into three categories:
+
+- "error": versions that do not respect the syntax established by `packaging.version`.
+- "warning": versions that respect the correct syntax but are to large to encode with our 8-byte scheme, causing potential loss of information.
+- "white": versions that respect the correct syntax and can be encoded correctly.

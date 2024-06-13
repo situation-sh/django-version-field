@@ -111,15 +111,16 @@ class VersionCodex:
         # Pre-release and dev-release information
         if version_obj.is_devrelease and version_obj.pre:
             pre_letter, pre_number = version_obj.pre
-            if pre_number > 63:
+            if pre_number > 62:
                 raise ValueError(
-                    "Pre-release number larger than 63"
-                )  #  The value of pre is caped at '63' since only 6 bits are reserved for it
+                    "Pre-release number larger than 62"
+                )  #  The value of pre is caped at '62' since only 6 bits are reserved for it and
+                # .rc63 translates to '11111111', which is reserved for 'not pre-release'.
             pre_bit_stream = cls.pre_release_dict[pre_letter] + bin(
                 pre_number
             )[2:].rjust(
                 6, "0"
-            )  # The pre-release letter in encoded in 2 bits
+            )  # The pre-release letter is encoded in 2 bits
             dev_number = version_obj.dev
             if (
                 dev_number > 15
@@ -136,15 +137,16 @@ class VersionCodex:
             dev_bit_stream = bin(dev_number)[2:].rjust(4, "0")
         elif not version_obj.is_devrelease and version_obj.pre:
             pre_letter, pre_number = version_obj.pre
-            if pre_number > 63:
+            if pre_number > 62:
                 raise ValueError(
-                    "Pre-release number larger than 63"
-                )  #  The value of pre is caped at '63' since only 6 bits are reserved for it
+                    "Pre-release number larger than 62"
+                )  #  The value of pre is caped at '62' since only 6 bits are reserved for it and
+                # .rc63 translates to '11111111', which is reserved for 'not pre-release'.
             pre_bit_stream = cls.pre_release_dict[pre_letter] + bin(
                 pre_number
             )[2:].rjust(
                 6, "0"
-            )  # The pre-release letter in encoded in 2 bits
+            )  # The pre-release letter is encoded in 2 bits
             dev_bit_stream = "1111"
         else:
             pre_bit_stream = "11111111"
@@ -228,7 +230,7 @@ class VersionField(models.PositiveBigIntegerField):
     description = "Software versions encoded in 8-byte signed integers. Ideal for comparing software versions on lookups."
 
     def from_db_value(
-        self, value: Any, expression, connection
+        self, value: Any, expression: str, connection: Any
     ) -> None | Version:
         if value is None:
             return value
