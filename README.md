@@ -69,7 +69,7 @@ The field parses the input string using the packaging.version `parse` method. `p
 ```
 [N!]N(.N)*[{a|b|rc}N][.postN][.devN]
 ```
-where `N` are positive integers. Inputs not satisfying this condition with raise the `InvalidVersion` error.
+where `N` are positive integers. Inputs not satisfying this condition will raise the `InvalidVersion` error.
 Once the input is parsed, the field tries to create a bit stream by concatenating:
 
 - The epoch number encoded into 4 bits.
