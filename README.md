@@ -87,6 +87,14 @@ The input can contain more than 4 parts in the 'release' segment, but these must
 
 ![Segment structure diagram](/images/Version_Segment_Structure.pdf)
 
+### Post-release
+
+After comparing the release portion of two versions, a version which is **post-release** should be greater than a version which is **not post-release**. E.g. `'1.1post0'>'1.1'` and `'1.2'>'1.1post0'`. The post-release flag in our code is used to distinguish between post-release versions where the post-release number is `0` (such as `'1.1post0'`) and pure release versions (such as `'1.1'`).
+
+### Pre-release
+
+After comparing the release portion of two versions, a version which is **pre-release** should be lesser than a version which is **not pre-release**. E.g. `'1.1a3'<'1.1'` and `'1.2a3'>'1.1post0'`. After comparing the release portion of two versions, a version which is **dev-release** should be lesser than any other version, including **pre-release** versions. E.g. `'1.1dev5'<'1.1'`, `'1.1dev5'<'1.1a5'`, and naturally `'1.1a5dev5'<'1.1a5'`.
+
 ## Test Data
 
 Test data was extracted from the Common Platform Enumeration (CPE) records from the National Vulnerability Database (NVD), the [CPE dictionary version 2.3](https://nvd.nist.gov/feeds/xml/cpe/dictionary/official-cpe-dictionary_v2.3.xml.gz), which contains an exhaustive list of software products with their versions.
