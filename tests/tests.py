@@ -59,7 +59,7 @@ class DataParsingTestCase(TestCase):
             try:
                 _ = VersionCodex.version2int(item)
             except ValueError as error:
-                logger.error(f"{item} cannot be encoded: {error}")
+                logger.error(f"'{item}' cannot be encoded: {error}")
         logger.info("Finished test_warning_data_parsing")
 
     def test_error_data_parsing(self) -> None:
