@@ -1,6 +1,9 @@
 import copy
+import logging
+import os
 import random
 import time
+from datetime import date
 from typing import List, Tuple
 
 from django.test import TestCase
@@ -11,6 +14,13 @@ from django_version_field.field import VersionCodex
 from .data import data
 from .models import TestModel
 from .test_params import test_size_for_instance_comparison
+
+log_file_name = f"tests/logs/tests-{date.today()}.log"
+os.makedirs(os.path.dirname(log_file_name), exist_ok=True)
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    filename=log_file_name, encoding="utf-8", level=logging.DEBUG
+)
 
 
 class DeclinationsTestCase(TestCase):
@@ -37,21 +47,35 @@ class DeclinationsTestCase(TestCase):
 
 
 class DataParsingTestCase(TestCase):
-    def test_data_parsing(self) -> None:
-        """Counts the number of faulty inputs from the NIST NVD CPE records."""
-        total_examples = 0
-        faulty_inputs = 0
-        value_errors = 0
-        for item in data["white"] + data["warning"] + data["error"]:
-            total_examples += 1
+    def test_white_data_parsing(self) -> None:
+        """Test that the input string can be parsed and transformed into an integer."""
+        for item in data["white"]:
+            _ = VersionCodex.version2int(item)
+
+    def test_warning_data_parsing(self) -> None:
+        """Test that large input strings raise a value error."""
+        logger.info("Started test_warning_data_parsing")
+        for item in data["warning"]:
             try:
-                _ = Version(item)
-                try:
-                    _ = VersionCodex.version2int(item)
-                except ValueError:
-                    value_errors += 1
-            except InvalidVersion:
-                faulty_inputs += 1
+                _ = VersionCodex.version2int(item)
+            except ValueError as error:
+                logger.error(f"{item} cannot be encoded: {error}")
+        logger.info("Finished test_warning_data_parsing")
+
+    def test_error_data_parsing(self) -> None:
+        """Test that faulty input strings raise an invalid version error."""
+        logger.info("Started test_error_data_parsing")
+        for item in data["error"]:
+            try:
+                _ = VersionCodex.version2int(item)
+            except InvalidVersion as error:
+                logger.error(f"{error}")
+        logger.info("Finished test_error_data_parsing")
+
+    def test_print_stats_nvd_records(self) -> None:
+        total_examples = len(data["white"] + data["warning"] + data["error"])
+        faulty_inputs = len(data["error"])
+        value_errors = len(data["warning"])
         valid_inputs = total_examples - faulty_inputs
         value_error_percentage = value_errors / valid_inputs * 100
         valid_input_percentage = valid_inputs / total_examples * 100
