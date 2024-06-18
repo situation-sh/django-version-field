@@ -1,6 +1,7 @@
 import copy
 import random
-from typing import Dict, List, Tuple
+import time
+from typing import List, Tuple
 
 from django.test import TestCase
 from packaging.version import InvalidVersion, Version, _cmpkey, _Version
@@ -232,6 +233,54 @@ class TestBitshift(TestCase):
     DUMMY_VERSION = Version("0.0.0")
 
     def version_to_int(self, v: Version) -> int:
+        # Validate the input
+        if (
+            v.epoch > 15
+        ):  # The value of the epoch is caped at '15' since only 4 bits are reserved for this field
+            raise ValueError("Epoch number larger than 15")
+        len_release = len(v.release)
+        if len_release > 4:
+            for i in range(
+                4, len_release
+            ):  # If there is only 0s after the 4th component we can ignore the 0s and still reconstruct the string
+                if v.release[i] != 0:
+                    raise ValueError(
+                        "release segment has more than 4 components"
+                    )
+        if (
+            v.major > 4095
+        ):  # The value of major is caped at '4095' since only 12 bits are reserved for this field
+            raise ValueError("Major release number larger than 4095")
+        if (
+            v.minor > 255
+        ):  # The value of minor is caped at '255' since only 8 bits are reserved for this field
+            raise ValueError("Minor release number larger than 255")
+        if (
+            v.micro > 65535
+        ):  # The value of patch is caped at '65535' since only 16 bits are reserved for this field
+            raise ValueError("Patch release number larger than 65535")
+        if len_release > 3:
+            if (
+                v.release[3] > 255
+            ):  # The value of the additional release field is caped at '255' since only 8 bits are reserved for this field
+                raise ValueError("Additional release field larger than 255")
+        if v.is_postrelease:
+            if (
+                v.post > 7
+            ):  # The value of post is caped at '7' since only 3 bits are reserved for it
+                raise ValueError("Post number larger than 7")
+        if v.pre:
+            if v.pre[1] > 62:
+                raise ValueError(
+                    "Pre-release number larger than 62"
+                )  #  The value of pre is caped at '62' since only 6 bits are reserved for it and
+                # .rc63 translates to '11111111', which is reserved for 'not pre-release'.
+        if v.is_devrelease:
+            if (
+                v.dev > 15
+            ):  # The value of dev is caped at '15' since only 4 bits are reserved for it
+                raise ValueError("Dev number larger than 15")
+
         release = v.release[3] if len(v.release) >= 4 else 0
         # if v.pre is set we take it.
         # Otherwise it depends if we are in prerelease (prerelease = pre || dev).
@@ -372,3 +421,23 @@ class TestBitshift(TestCase):
                 print(v)
                 print(err)
                 raise err
+
+    def test_speed(self):
+        print(
+            "Speed Test: transform a version string into integer and then back into a version object"
+        )
+        print("Using white data")
+        # bin version
+        start1 = time.time()
+        for item in data["white"]:
+            _ = Version(
+                VersionCodex.int2version(VersionCodex.version2int(item))
+            )
+        end1 = time.time()
+        print(f"VersionCodex took {end1-start1} seconds.")
+        # bit shift version
+        start2 = time.time()
+        for item in data["white"]:
+            _ = self.int_to_version(self.version_to_int(Version(item)))
+        end2 = time.time()
+        print(f"Bit-shift took {end2-start2} seconds.")
