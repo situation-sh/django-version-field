@@ -15,4 +15,4 @@ jobs:
       - name: Poetry install other dependencies
         run: poetry install
       - name: Run test suite
-        run: poetry run python runtests
+        run: poetry run python runtests.py
