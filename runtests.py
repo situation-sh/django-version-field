@@ -18,8 +18,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(__file__)
     parser.add_argument(
         "target",
-        default="tests",
-        nargs="+",
+        default=["tests"],
+        nargs="?",
         help="Set the test you want to trigger (ex: 'tests.tests.MyTestCase')",
     )
     args = parser.parse_args()
