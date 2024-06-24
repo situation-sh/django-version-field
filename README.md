@@ -1,16 +1,18 @@
 # django-version-field
 
-A field to handle software version information in Django models. Our main goal is to have useful lookups, i.e. to be able to make order comparisons between versions. This requires transforming the input into an integer. We have two desired properties:
+A field to handle software version information in Django models.
+
+Our main goal is to have useful lookups, i.e. to be able to make order comparisons between versions. This requires **transforming the input into an integer**. We have two desired properties:
 
 1. To be able to reconstruct the input without losing information.
 2. To preserve the order when transforming inputs into integers.
 
-The main constraint is the max size of the interger that can be stored in the database (8-bytes). This constraint forces us to reject inputs that are too large to fit into our scheme. Please read the *Internals* section below for more details.
+The main constraint is the max size of the integer that can be stored in the database (8-bytes). This constraint forces us to reject inputs that are too large to fit into our scheme. Please read the _Internals_ section below for more details.
 
 ## Usage
 
 > [!IMPORTANT]
-> Invalid version strings, versions with local version information and inputs too large to be encoded will be rejected. Please read the *Internals* section for details.
+> Invalid version strings, versions with local version information and inputs too large to be encoded will be rejected. Please read the _Internals_ section for details.
 
 ### Model
 
@@ -66,9 +68,11 @@ Then you can visit [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/) 
 ## Internals
 
 The field parses the input string using the packaging.version `parse` method. `parse` expects an input complying with the following scheme,
+
 ```
 [N!]N(.N)*[{a|b|rc}N][.postN][.devN]
 ```
+
 where `N` are positive integers. Inputs not satisfying this condition will raise the `InvalidVersion` error.
 Once the input is parsed, the field tries to create a bit stream by concatenating:
 
@@ -80,6 +84,55 @@ Once the input is parsed, the field tries to create a bit stream by concatenatin
 - The pre-release number and symbol (`a`,`b` or `rc`) encoded into 6 bits and 2 bits, respectively.
 - The post-release number and post-release flag encoded into 4 bits (3 bits for the number).
 - The dev-release number encoded into 4 bits.
+
+<table>
+  <thead>
+    <tr>
+      <th>Byte</th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>10</th>
+      <th>11</th>
+      <th>12</th>
+      <th>13</th>
+      <th>14</th>
+      <th>15</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td colspan="4">Epoch</td>
+      <td colspan="12">Major</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td colspan="8">Minor</td>
+      <td colspan="8">Patch</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td colspan="8">Patch</td>
+      <td colspan="8">Additional release segment</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td colspan="2">F</td>
+      <td colspan="6">Pre-release</td>
+      <td></td>
+      <td colspan="3">Post-release</td>
+      <td colspan="4">Dev-release</td>
+    </tr>
+  </tbody>
+</table>
 
 Inputs where a segment is too large to be encoded are rejected, raising `ValueError`.
 The local version information is not encoded in our scheme, so inputs with local version information are rejected.
