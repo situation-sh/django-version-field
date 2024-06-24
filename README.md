@@ -9,6 +9,14 @@ Our main goal is to have useful lookups, i.e. to be able to make order compariso
 
 The main constraint is the max size of the integer that can be stored in the database (8-bytes). This constraint forces us to reject inputs that are too large to fit into our scheme. Please read the _Internals_ section below for more details.
 
+## Install
+
+Currently the package is not available on PyPI because of name collision (`django-version-field` is too close to another package, maybe `django-versionfield`). So you must install it from this repo:
+
+```shell
+pip install git+https://github.com/situation-sh/django-version-field@0.1.0
+```
+
 ## Usage
 
 > [!IMPORTANT]
