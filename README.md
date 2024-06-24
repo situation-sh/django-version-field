@@ -1,5 +1,8 @@
 # django-version-field
 
+[![build](https://github.com/situation-sh/django-version-field/actions/workflows/build.yml/badge.svg)](https://github.com/situation-sh/django-version-field/actions/workflows/build.yml)
+[![test](https://github.com/situation-sh/django-version-field/actions/workflows/test.yml/badge.svg)](https://github.com/situation-sh/django-version-field/actions/workflows/test.yml)
+
 A field to handle software version information in Django models.
 
 Our main goal is to have useful lookups, i.e. to be able to make order comparisons between versions. This requires **transforming the input into an integer**. We have two desired properties:
