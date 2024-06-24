@@ -2,7 +2,10 @@
 name = "django-version-field"
 version = "0.1.0"
 description = "A field to handle versions in Django models"
-authors = []
+authors = [
+    "Ganesh Del Grosso <ganesh@situation.sh>",
+    "Alban Siffer <31479857+asiffer@users.noreply.github.com>",
+]
 license = "Apache 2.0"
 readme = "README.md"
 
