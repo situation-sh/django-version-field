@@ -1,17 +1,17 @@
-name: runtests
+name: test
 on:
   push:
     paths:
       - "**.py"
       - "poetry.lock"
-      - ".github/workflows/runtests.yml"
+      - ".github/workflows/test.yml"
   pull_request:
     paths:
       - "**.py"
       - "poetry.lock"
-      - ".github/workflows/runtests.yml"
+      - ".github/workflows/test.yml"
 jobs:
-  run-all-tests:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
