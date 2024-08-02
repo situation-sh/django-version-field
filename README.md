@@ -149,8 +149,6 @@ Inputs where a segment is too large to be encoded are rejected, raising `ValueEr
 The local version information is not encoded in our scheme, so inputs with local version information are rejected.
 The input can contain more than 4 parts in the 'release' segment, but these must contain only '0', otherwise the input is rejected.
 
-![Segment structure diagram](/images/Version_Segment_Structure.pdf)
-
 ### Post-release
 
 After comparing the release portion of two versions, a version which is **post-release** should be greater than a version which is **not post-release**. E.g. `'1.1post0'>'1.1'` and `'1.2'>'1.1post0'`. The post-release flag in our code is used to distinguish between post-release versions where the post-release number is `0` (such as `'1.1post0'`) and pure release versions (such as `'1.1'`).
