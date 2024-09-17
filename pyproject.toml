@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-version-field"
-version = "0.2.0"
+version = "0.3.0"
 description = "A field to handle versions in Django models"
 authors = [
     "Ganesh Del Grosso <ganesh@situation.sh>",
