@@ -17,7 +17,7 @@ The main constraint is the max size of the integer that can be stored in the dat
 Currently the package is not available on PyPI because of name collision (`django-version-field` is too close to another package, maybe `django-versionfield`). So you must install it from this repo:
 
 ```shell
-pip install git+https://github.com/situation-sh/django-version-field@0.3.0
+pip install git+https://github.com/situation-sh/django-version-field@v0.3.0
 ```
 
 ## Usage
