@@ -236,14 +236,14 @@ class VersionField(models.PositiveBigIntegerField):
             return value
         return Version(VersionCodex.int2version(value))
 
-    def to_python(self, value: Any) -> None | Version:
-        if isinstance(value, Version):
+    def to_python(self, value: Any) -> None | str:
+        if isinstance(value, str):
             return value
 
         if value is None:
             return value
 
-        return Version(VersionCodex.int2version(value))
+        return VersionCodex.int2version(value)
 
     def get_prep_value(self, value: str) -> int:
         if isinstance(value, int):
